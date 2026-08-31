@@ -11,16 +11,35 @@ union value{
 };
 // reads 8 hex characters from string input and stores it in the union v
 // returns -1 if the hexadecimal number is invalid, 0 otherwise
-int read_hex(union value *v, char *input);
+int read_hex(union value *v, char *input){
+
+}
 
 // converts the ASCII hex character c to binary
 // returns the hex value of c if c is a valid hex digit, -1 otherwise
-char hexDigit(char c);
+char hexDigit(char c){
+
+}
 
 // returns true if x has any even bit equal to 1, 0 otherwise
 int any_even_one(unsigned x);
+
 // returns a mask indicating the position of the left most one in x
-int leftmost_one(unsigned x);
+int leftmost_one(unsigned x){
+    if (x==0){
+        return 0;
+    }
+
+    int count = 0; 
+
+    while (x!=0){
+        x = x>>1;
+        count++;
+    }
+    
+    return x << (count-1);
+}
+
 // returns x shifted n positions to the left with the n most significant bits of x 
 // inserted at the right of x
 unsigned rotate_left(unsigned x, int n);
