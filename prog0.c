@@ -77,7 +77,15 @@ int read_hex(union value *v, char *input){
 }
 
 // returns true if x has any even bit equal to 1, 0 otherwise
-int any_even_one(unsigned x);
+int any_even_one(unsigned x){
+    for (int i = 0; i< 32; i= i+2){
+        unsigned new_x = x>>i;
+        if ((new_x & 1)==1){
+            return 1;
+        }
+    }
+    return 0;
+}
 
 // returns a mask indicating the position of the left most one in x
 int leftmost_one(unsigned x){
@@ -118,6 +126,24 @@ int main(int argc, char** argv){
     if(argc != 3 && argc != 4){
         printf("Invalid number of arguments");
         exit(0);
+    }
+
+    union value value;
+
+    if (strcmp(argv[1], "even") == 0){
+            int valid = read_hex(&value, argv[2]);
+            if (valid==-1){
+                printf("Invalid hex value\n");
+            }
+            else{
+                int result = any_even_one(value.uval);
+                if (result == 1){
+                    printf("True\n");
+                }
+                else{
+                    printf("False\n");
+                }
+            }
     }
     return 0;
 }
