@@ -121,10 +121,28 @@ unsigned rotate_right(unsigned x, int n){
     x = (x>>n)| (x<<(32-n));
     return x;
 }
+
 // returns x+y if no overflow occurs
 // returns TMAX if a positive overflow occurs
 // returns TMIN if a negative overflow occurs
-int saturating_add(int x, int y);
+int saturating_add(int x, int y){
+     int tmax = 0x7fffffff;
+     int tmin = 0x80000000;
+
+     int sum = x+y; 
+
+    if (x+y > tmax){
+        return tmax;
+    }
+    else if (x+y< tmin) {
+        return tmin;
+    }
+
+    return sum;
+}
+
+
+
 // multiplies the binary representation of a float number f by 2
 unsigned float_twice(unsigned f);
 // divides the binary representation of a float number f by 2
@@ -153,8 +171,7 @@ int main(int argc, char** argv){
                 }
             }
     }
-
-    if (strcmp(argv[1], "left") == 0){
+    else if (strcmp(argv[1], "left") == 0){
          int valid = read_hex(&value, argv[2]);
             if (valid==-1){
                 printf("Invalid hex value\n");
@@ -164,27 +181,40 @@ int main(int argc, char** argv){
                 printf("%08x\n", result);
             }
     }
-
-    if (strcmp(argv[1], "lrotate")==0){
+    else if (strcmp(argv[1], "lrotate")==0){
         int valid = read_hex(&value, argv[2]);
             if (valid==-1){
                 printf("Invalid hex value\n");
             }
             else{
-                unsigned result = rotate_left(value.uval, atoi(argv[3]));
-                printf("%08x\n", result);
+                int shift = atoi(argv[3]);
+                unsigned result = rotate_left(value.uval, shift);
+                if (shift>32){
+                    printf("Invalid number of shift positions\n");
+                }
+                else{
+                    printf("%08x\n", result);
+                }
             }
     }
-
-    if (strcmp(argv[1], "rrotate")==0){
+    else if (strcmp(argv[1], "rrotate")==0){
         int valid = read_hex(&value, argv[2]);
             if (valid==-1){
                 printf("Invalid hex value\n");
             }
             else{
-                unsigned result = rotate_right(value.uval, atoi(argv[3]));
-                printf("%08x\n", result);
+                int shift = atoi(argv[3]);
+                unsigned result = rotate_right(value.uval, shift);
+                if (shift>32){
+                    printf("Invalid number of shift positions\n");
+                }
+                else{
+                    printf("%08x\n", result);
+                }
             }
+    }
+    else{
+        printf("Invalid operation\n");
     }
 
 
