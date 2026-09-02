@@ -110,6 +110,8 @@ unsigned rotate_left(unsigned x, int n){
     x = (temp>>32-n);
     return x;
 }
+
+
 // returns x shifted n positions to the right with the n least significant bits of x 
 // inserted at the left of x
 unsigned rotate_right(unsigned x, int n);
@@ -145,5 +147,17 @@ int main(int argc, char** argv){
                 }
             }
     }
+
+    if (strcmp(argv[1], "left") == 0){
+         int valid = read_hex(&value, argv[2]);
+            if (valid==-1){
+                printf("Invalid hex value\n");
+            }
+            else{
+                int result = leftmost_one(value.uval);
+                printf("%08x\n", result);
+            }
+    }
+
     return 0;
 }
