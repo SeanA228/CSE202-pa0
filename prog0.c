@@ -149,7 +149,7 @@ unsigned float_twice(unsigned f){
         return f;
     }
     else if (exponent == 0){
-        return f;
+        return (f & 0x7FFFFF)<<1; 
     }
     
     exponent+=1;
@@ -168,6 +168,9 @@ unsigned float_half(unsigned f){
     }
     else if (exponent == 0){
         return f;
+    }
+    else if (exponent ==1){
+        return ((f & 0x7FFFFF)| (1<<23))>>1;
     }
     
     exponent-=1;
