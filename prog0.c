@@ -142,7 +142,23 @@ int saturating_add(int x, int y){
 
 
 // multiplies the binary representation of a float number f by 2
-unsigned float_twice(unsigned f);
+unsigned float_twice(unsigned f){
+    unsigned exponent = (f>>23) & 0xFF;
+
+    if (exponent == 0xFF){
+        return f;
+    }
+    else if (exponent == 0){
+        return f;
+    }
+    
+    exponent+=1;
+
+    f = (f & ~(0xFF<<23)) | (exponent<<23); 
+
+    return f;
+}
+
 // divides the binary representation of a float number f by 2
 unsigned float_half(unsigned f);
 
@@ -221,6 +237,28 @@ int main(int argc, char** argv){
         else{
             int sum = saturating_add(value.sval, value2.sval);
             printf("%08x %i\n",sum, sum);
+        }
+    }
+    else if (strcmp(argv[1], "twice")==0){
+        int valid = read_hex(&value, argv[2]);
+        if (valid==-1){
+            printf("Invalid hex value\n");
+        }
+        else{
+            unsigned result = float_twice(value.uval);
+            value.uval = result;
+            printf("%08x %e\n", value.uval, value.fval);
+        }
+    }
+    else if (strcmp(argv[1], "half")==0){
+        int valid = read_hex(&value, argv[2]);
+        if (valid==-1){
+            printf("Invalid hex value\n");
+        }
+        else{
+            unsigned result = float_twice(value.uval);
+            value.uval = result;
+            printf("%08x %e\n", value.uval, value.fval);
         }
     }
     else{
