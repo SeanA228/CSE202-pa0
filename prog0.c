@@ -160,7 +160,22 @@ unsigned float_twice(unsigned f){
 }
 
 // divides the binary representation of a float number f by 2
-unsigned float_half(unsigned f);
+unsigned float_half(unsigned f){
+    unsigned exponent = (f>>23) & 0xFF;
+
+    if (exponent == 0xFF){
+        return f;
+    }
+    else if (exponent == 0){
+        return f;
+    }
+    
+    exponent-=1;
+
+    f = (f & ~(0xFF<<23)) | (exponent<<23); 
+
+    return f;
+}
 
 int main(int argc, char** argv){
     if(argc != 3 && argc != 4){
@@ -256,7 +271,7 @@ int main(int argc, char** argv){
             printf("Invalid hex value\n");
         }
         else{
-            unsigned result = float_twice(value.uval);
+            unsigned result = float_half(value.uval);
             value.uval = result;
             printf("%08x %e\n", value.uval, value.fval);
         }
