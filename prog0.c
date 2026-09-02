@@ -126,18 +126,16 @@ unsigned rotate_right(unsigned x, int n){
 // returns TMAX if a positive overflow occurs
 // returns TMIN if a negative overflow occurs
 int saturating_add(int x, int y){
-     int tmax = 0x7fffffff;
-     int tmin = 0x80000000;
+    int tmax = 0x7fffffff;
+    int tmin = 0x80000000;
+    int sum = x+y;
 
-     int sum = x+y; 
-
-    if (x+y > tmax){
+    if ((x>0) && (y>0) && (sum<0)){
         return tmax;
     }
-    else if (x+y< tmin) {
+    else if ((x<0) && (y<0) && (sum>0)){
         return tmin;
     }
-
     return sum;
 }
 
@@ -155,6 +153,7 @@ int main(int argc, char** argv){
     }
 
     union value value;
+    union value value2;
 
     if (strcmp(argv[1], "even") == 0){
             int valid = read_hex(&value, argv[2]);
@@ -172,46 +171,57 @@ int main(int argc, char** argv){
             }
     }
     else if (strcmp(argv[1], "left") == 0){
-         int valid = read_hex(&value, argv[2]);
-            if (valid==-1){
-                printf("Invalid hex value\n");
-            }
-            else{
-                int result = leftmost_one(value.uval);
-                printf("%08x\n", result);
-            }
+        int valid = read_hex(&value, argv[2]);
+        if (valid==-1){
+            printf("Invalid hex value\n");
+        }
+        else{
+            int result = leftmost_one(value.uval);
+            printf("%08x\n", result);
+        }
     }
     else if (strcmp(argv[1], "lrotate")==0){
         int valid = read_hex(&value, argv[2]);
-            if (valid==-1){
-                printf("Invalid hex value\n");
+        if (valid==-1){
+            printf("Invalid hex value\n");
+        }
+        else{
+            int shift = atoi(argv[3]);
+            unsigned result = rotate_left(value.uval, shift);
+            if (shift>32){
+                printf("Invalid number of shift positions\n");
             }
             else{
-                int shift = atoi(argv[3]);
-                unsigned result = rotate_left(value.uval, shift);
-                if (shift>32){
-                    printf("Invalid number of shift positions\n");
-                }
-                else{
-                    printf("%08x\n", result);
-                }
+                printf("%08x\n", result);
             }
+        }
     }
     else if (strcmp(argv[1], "rrotate")==0){
         int valid = read_hex(&value, argv[2]);
-            if (valid==-1){
-                printf("Invalid hex value\n");
+        if (valid==-1){
+            printf("Invalid hex value\n");
+        }
+        else{
+            int shift = atoi(argv[3]);
+            if (shift>=32){
+                printf("Invalid number of shift positions\n");
             }
             else{
-                int shift = atoi(argv[3]);
                 unsigned result = rotate_right(value.uval, shift);
-                if (shift>32){
-                    printf("Invalid number of shift positions\n");
-                }
-                else{
-                    printf("%08x\n", result);
-                }
+                printf("%08x\n", result);
             }
+        }
+    }
+    else if (strcmp(argv[1], "saturate")==0){
+        int valid1 = read_hex(&value, argv[2]);
+        int valid2 = read_hex(&value2, argv[3]);
+        if ((valid1==-1) || (valid2==-1)){
+            printf("Invalid hex value\n");
+        }
+        else{
+            int sum = saturating_add(value.sval, value2.sval);
+            printf("%08x %i\n",sum, sum);
+        }
     }
     else{
         printf("Invalid operation\n");
