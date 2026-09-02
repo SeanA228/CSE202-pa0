@@ -117,7 +117,10 @@ unsigned rotate_left(unsigned x, int n){
 
 // returns x shifted n positions to the right with the n least significant bits of x 
 // inserted at the left of x
-unsigned rotate_right(unsigned x, int n);
+unsigned rotate_right(unsigned x, int n){
+    x = (x>>n)| (x<<(32-n));
+    return x;
+}
 // returns x+y if no overflow occurs
 // returns TMAX if a positive overflow occurs
 // returns TMIN if a negative overflow occurs
@@ -169,6 +172,17 @@ int main(int argc, char** argv){
             }
             else{
                 unsigned result = rotate_left(value.uval, atoi(argv[3]));
+                printf("%08x\n", result);
+            }
+    }
+
+    if (strcmp(argv[1], "rrotate")==0){
+        int valid = read_hex(&value, argv[2]);
+            if (valid==-1){
+                printf("Invalid hex value\n");
+            }
+            else{
+                unsigned result = rotate_right(value.uval, atoi(argv[3]));
                 printf("%08x\n", result);
             }
     }
