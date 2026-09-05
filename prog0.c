@@ -2,6 +2,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
+
+/* 
+On my Mac, only 31 test cases works, and I had to modify the run_tests.sh files to 
+run it and test it. On Sunlab, all cases do work. Because I was unfamiliar with 
+float-point representation, I did have AI guide me with how to write those methods. 
+I did not copy and paste it. I am trying to learn. 
+*/
+
 // Union to store 4 bytes as an array of bytes, an unsigned, signed, or float number
 union value{
     unsigned uval;
@@ -11,6 +19,7 @@ union value{
 };
 
 // converts the ASCII hex character c to binary
+// @param c - char that is changed to binary 
 // returns the hex value of c if c is a valid hex digit, -1 otherwise
 char hexDigit(char c){
     switch (c){
@@ -58,6 +67,8 @@ char hexDigit(char c){
 }
 
 // reads 8 hex characters from string input and stores it in the union v
+// @param v - value structure to store bytes
+// @param input - string input
 // returns -1 if the hexadecimal number is invalid, 0 otherwise
 int read_hex(union value *v, char *input){
     if (strlen(input) != 8){
@@ -76,6 +87,8 @@ int read_hex(union value *v, char *input){
     return 0;
 }
 
+// Checks if x has a 1 in any of the even bits
+// @param x - the value checked 
 // returns true if x has any even bit equal to 1, 0 otherwise
 int any_even_one(unsigned x){
     for (int i = 0; i< 32; i= i+2){
@@ -87,6 +100,8 @@ int any_even_one(unsigned x){
     return 0;
 }
 
+// Finds the left most position of a 1 in x
+// @param x - the value used for checking
 // returns a mask indicating the position of the left most one in x
 int leftmost_one(unsigned x){
     if (x==0){
@@ -103,6 +118,9 @@ int leftmost_one(unsigned x){
     return 1 << (count-1);
 }
 
+// Shifts the value of x to the left by n positions
+// @param x - the value being shifted
+// @param n - the amount of left shifts
 // returns x shifted n positions to the left with the n most significant bits of x 
 // inserted at the right of x
 unsigned rotate_left(unsigned x, int n){
@@ -114,7 +132,9 @@ unsigned rotate_left(unsigned x, int n){
     return x;
 }
 
-
+// Shifts the value of x to the right by n positions
+// @param x - the value being shifted
+// @param n - the amount of right shifts
 // returns x shifted n positions to the right with the n least significant bits of x 
 // inserted at the left of x
 unsigned rotate_right(unsigned x, int n){
@@ -122,12 +142,15 @@ unsigned rotate_right(unsigned x, int n){
     return x;
 }
 
+// Adds two numbers without including underflow or overflow
+// @param x - the first number being added
+// @param y - the second number being added
 // returns x+y if no overflow occurs
 // returns TMAX if a positive overflow occurs
 // returns TMIN if a negative overflow occurs
 int saturating_add(int x, int y){
-    int tmax = 0x7fffffff;
-    int tmin = 0x80000000;
+    int tmax = 0x7fffffff; // 2^31 -1
+    int tmin = 0x80000000; // -2^31
     int sum = x+y;
 
     if ((x>0) && (y>0) && (sum<0)){
@@ -140,16 +163,17 @@ int saturating_add(int x, int y){
 }
 
 
-
+// @param f - the float number multiplied
+// @return - double of the float number
 // multiplies the binary representation of a float number f by 2
 unsigned float_twice(unsigned f){
-    unsigned exponent = (f>>23) & 0xFF;
+    unsigned exponent = (f>>23) & 0xFF; // 1111 1111
 
-    if (exponent == 0xFF){
+    if (exponent == 0xFF){ 
         return f;
     }
     else if (exponent == 0){
-        return (f & 0x7FFFFF)<<1; 
+        return (f & 0x7FFFFF)<<1; // 0111 1111 1111 1111 1111 1111
     }
     
     exponent+=1;
@@ -159,6 +183,8 @@ unsigned float_twice(unsigned f){
     return f;
 }
 
+// @param f - the float number divided
+// @return - half of the float number
 // divides the binary representation of a float number f by 2
 unsigned float_half(unsigned f){
     unsigned exponent = (f>>23) & 0xFF;
@@ -180,18 +206,23 @@ unsigned float_half(unsigned f){
     return f;
 }
 
+// Main Method 
+// @param argc - number of command line arguments
+// @param argv - the arguments 
 int main(int argc, char** argv){
     if(argc != 3 && argc != 4){
         printf("Invalid number of arguments");
         exit(0);
     }
 
-    union value value;
+    // Stores the arrays of bytes
+    union value value; 
     union value value2;
 
+    // If statements to test all of the methods 
     if (strcmp(argv[1], "even") == 0){
             int valid = read_hex(&value, argv[2]);
-            if (valid==-1){
+            if (valid==-1){ // Checks if hex is valid
                 printf("Invalid hex value\n");
             }
             else{
@@ -222,7 +253,7 @@ int main(int argc, char** argv){
         else{
             int shift = atoi(argv[3]);
             unsigned result = rotate_left(value.uval, shift);
-            if (shift>32){
+            if (shift>32){ // Checks for valid positions shifts 
                 printf("Invalid number of shift positions\n");
             }
             else{
@@ -279,11 +310,9 @@ int main(int argc, char** argv){
             printf("%08x %e\n", value.uval, value.fval);
         }
     }
-    else{
+    else{ // Will print if it is not one of the specified functions above
         printf("Invalid operation\n");
     }
-
-
 
     return 0;
 }
