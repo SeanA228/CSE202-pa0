@@ -46,7 +46,7 @@ if [[ $rc == 0 ]]; then
     echo -e "\nTest $total with args: $test"
     ./prog0 $test | tee -a tests.out
   done
-paste -d '|' tests.out tests.reference | ggrep -Po '^(.*)\|+\K\1$' > out
+paste -d '|' tests.out tests.reference | grep -Po '^(.*)\|+\K\1$' > out
 #grep -f tests.out tests.reference > out
 count=0
 input="./out"
